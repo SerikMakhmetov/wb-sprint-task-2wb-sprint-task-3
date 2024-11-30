@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Конвертер валют</title>
+
+	<style>
+		.all {
+			display: flex;
+			justify-content: space-around;
+			width: 70%;
+			margin:0 auto;
+			margin-top: 100px;
+			border: 1px solid #DEE2E6;
+			border-radius: 8px;
+		}
+
+		.container {
+			display: flex;
+			flex-direction: column; /* Вертикальное расположение label и input-select */
+			margin-top: 20px;
+		}
+
+		.input-select {
+			display: flex;
+			flex-direction: row; /* Горизонтальное расположение input и select */
+			gap: 5px; /* Пробел между input и select */
+			margin-bottom: 30px;
+		}
+
+		.currency-input {
+			margin-top: 20px;
+		}
+		.container input[type="text"] {
+			background-color: #E8EBEE;
+			border: 0px;
+		}
+	</style>
+</head>
+<body>
+
+	<div class="all">
+		<div class="container">
+			<label for="sum">Введите сумму:</label> <!-- Метка для поля ввода -->
+			<div class="input-select"> <!-- Контейнер для поля ввода и списка -->
+				<input type="number" id="sum" value="1">
+				<select id="fromCurrency">
+					<option value="KZT">KZT</option>
+					<option value="USD">USD</option>
+					<option value="EUR">EUR</option>
+			  </select>
+			</div>
+		  </div>
+		<div class="container">
+			<label for="kztOutput"><b>KZT (tenge)</b></label>
+      		<input type="text" id="kztOutput" readonly>
+		</div>
+		<div class="container">
+			<label for="usdOutput"><b>USD (dollar)</b></label>
+			<input type="text" id="usdOutput" readonly>
+		</div>
+		<div class="container">
+			<label for="eurOutput"><b>EUR (euro)</b></label>
+			<input type="text" id="eurOutput" readonly>
+		</div>
+	</div>
+
+	<script>
+		const sumInput = document.getElementById('sum'); // Получение элемента ввода суммы
+		const fromCurrencySelect = document.getElementById('fromCurrency'); // Получение элемента списка валют
+		const kztOutput = document.getElementById('kztOutput'); // Получение элемента вывода KZT
+		const usdOutput = document.getElementById('usdOutput'); // Получение элемента вывода USD
+		const eurOutput = document.getElementById('eurOutput'); // Получение элемента вывода EUR
+
+		const rates = { // Объект с курсами валют
+			USD: { buy: 429, sell: 431 },
+			EUR: { buy: 507, sell: 509 }
+		};
+
+		function convertCurrency() {
+			const amount = parseFloat(sumInput.value); // Получение введенного значения суммы, конвертация в число с плавающей точкой
+			const from = fromCurrencySelect.value; // Получение выбранной валюты
+
+			if (isNaN(amount) || amount <= 0) {  // Проверка, является ли введенное значение числом и больше нуля
+				kztOutput.value = '';
+				usdOutput.value = '';
+				eurOutput.value = '';
+				return; // Прерываем функцию, если ввод некорректен
+			}
+
+
+			if (from === 'KZT') {
+				kztOutput.value = amount;
+				usdOutput.value = (amount / rates.USD.sell).toFixed(2);
+				eurOutput.value = (amount / rates.EUR.sell).toFixed(2);
+			} else if (from === 'USD') {
+				kztOutput.value = (amount * rates.USD.buy).toFixed(2);
+				usdOutput.value = amount;
+				eurOutput.value = (amount * rates.USD.buy / rates.EUR.sell).toFixed(2);
+			} else if (from === 'EUR') {
+				kztOutput.value = (amount * rates.EUR.buy).toFixed(2);
+				usdOutput.value = (amount * rates.EUR.buy / rates.USD.sell).toFixed(2);
+				eurOutput.value = amount;
+			}
+		}
+
+		sumInput.addEventListener('input', convertCurrency); // Обработчик события изменения значения в поле ввода суммы
+		fromCurrencySelect.addEventListener('change', convertCurrency); // Обработчик события изменения выбранной валюты
+
+		// Инициализация конвертации при загрузке страницы
+		convertCurrency();
+	</script>
+
+</body>
+</html>
